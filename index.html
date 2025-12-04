@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GREEN-API Тестирование</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 1200px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 28px;
+            grid-column: 1 / -1;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="text"], textarea.input-field {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        textarea.input-field {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        input[type="text"]:focus, textarea.input-field:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .buttons-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .method-group {
+            margin-bottom: 25px;
+        }
+
+        .method-group .input-group {
+            margin-bottom: 12px;
+        }
+
+        .method-group button {
+            width: 100%;
+        }
+
+        button {
+            padding: 14px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .response-section {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .response-section textarea {
+            width: 100%;
+            flex: 1;
+            min-height: 500px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            background-color: #f8f9fa;
+            resize: none;
+            color: #333;
+        }
+
+        .response-section textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+
+        .success {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+
+            .response-section textarea {
+                min-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GREEN-API Тестирование</h1>
+        
+        <div class="left-column">
+            <div class="section">
+                <div class="section-title">Параметры подключения</div>
+                <div class="input-group">
+                    <label for="idInstance">idInstance:</label>
+                    <input type="text" id="idInstance" placeholder="Введите idInstance">
+                </div>
+                <div class="input-group">
+                    <label for="apiTokenInstance">ApiTokenInstance:</label>
+                    <input type="text" id="apiTokenInstance" placeholder="Введите ApiTokenInstance">
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Методы API</div>
+                <div class="buttons-group">
+                    <button onclick="callGetSettings()" id="btnGetSettings">
+                        getSettings
+                    </button>
+                    <button onclick="callGetStateInstance()" id="btnGetStateInstance">
+                        getStateInstance
+                    </button>
+                </div>
+            </div>
+
+            <div class="section method-group">
+                <div class="section-title">sendMessage</div>
+                <div class="input-group">
+                    <label for="sendMessagePhone">Номер телефона:</label>
+                    <input type="text" id="sendMessagePhone" placeholder="Введите номер телефона">
+                </div>
+                <div class="input-group">
+                    <label for="sendMessageText">Сообщение:</label>
+                    <textarea class="input-field" id="sendMessageText" placeholder="Введите сообщение"></textarea>
+                </div>
+                <button onclick="callSendMessage()" id="btnSendMessage">
+                    sendMessage
+                </button>
+            </div>
+
+            <div class="section method-group">
+                <div class="section-title">sendFileByUrl</div>
+                <div class="input-group">
+                    <label for="sendFilePhone">Номер телефона:</label>
+                    <input type="text" id="sendFilePhone" placeholder="Введите номер телефона">
+                </div>
+                <div class="input-group">
+                    <label for="sendFileUrl">URL файла:</label>
+                    <input type="text" id="sendFileUrl" placeholder="Введите url файла">
+                </div>
+                <button onclick="callSendFileByUrl()" id="btnSendFileByUrl">
+                    sendFileByUrl
+                </button>
+            </div>
+        </div>
+
+        <div class="right-column">
+            <div class="section response-section">
+                <div class="section-title">Ответ:</div>
+                <textarea id="response" readonly placeholder="Ответы методов API будут отображаться здесь..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://api.green-api.com';
+
+        function getCredentials() {
+            const idInstance = document.getElementById('idInstance').value.trim();
+            const apiTokenInstance = document.getElementById('apiTokenInstance').value.trim();
+            
+            if (!idInstance || !apiTokenInstance) {
+                alert('Пожалуйста, введите idInstance и ApiTokenInstance');
+                return null;
+            }
+            
+            return { idInstance, apiTokenInstance };
+        }
+
+        function setButtonLoading(buttonId, isLoading) {
+            const button = document.getElementById(buttonId);
+            if (isLoading) {
+                button.disabled = true;
+                button.innerHTML = button.textContent.trim() + '<span class="loading"></span>';
+            } else {
+                button.disabled = false;
+                button.innerHTML = button.textContent.replace('<span class="loading"></span>', '').trim();
+            }
+        }
+
+        function displayResponse(data, isError = false) {
+            const responseTextarea = document.getElementById('response');
+            
+            let formattedData = JSON.stringify(data, null, 2);
+            
+            responseTextarea.value = formattedData;
+            responseTextarea.scrollTop = 0;
+        }
+
+        async function makeApiCall(endpoint, method = 'GET', body = null) {
+            const credentials = getCredentials();
+            if (!credentials) return;
+
+            const url = `${API_BASE_URL}/waInstance${credentials.idInstance}/${endpoint}/${credentials.apiTokenInstance}`;
+            
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+
+            try {
+                const response = await fetch(url, options);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResponse(data, false);
+                } else {
+                    displayResponse({ error: data, status: response.status }, true);
+                }
+            } catch (error) {
+                displayResponse({ error: error.message, type: 'NetworkError' }, true);
+            }
+        }
+
+        async function callGetSettings() {
+            setButtonLoading('btnGetSettings', true);
+            await makeApiCall('getSettings');
+            setButtonLoading('btnGetSettings', false);
+        }
+
+        async function callGetStateInstance() {
+            setButtonLoading('btnGetStateInstance', true);
+            await makeApiCall('getStateInstance');
+            setButtonLoading('btnGetStateInstance', false);
+        }
+
+        async function callSendMessage() {
+            setButtonLoading('btnSendMessage', true);
+            
+            const phone = document.getElementById('sendMessagePhone').value.trim();
+            const message = document.getElementById('sendMessageText').value.trim();
+            
+            if (!phone || !message) {
+                alert('Пожалуйста, заполните номер телефона и сообщение');
+                setButtonLoading('btnSendMessage', false);
+                return;
+            }
+
+            // Форматируем номер телефона: добавляем @c.us если его нет
+            let chatId = phone;
+            if (!chatId.includes('@')) {
+                chatId = chatId + '@c.us';
+            }
+
+            const credentials = getCredentials();
+            if (!credentials) {
+                setButtonLoading('btnSendMessage', false);
+                return;
+            }
+
+            const url = `${API_BASE_URL}/waInstance${credentials.idInstance}/sendMessage/${credentials.apiTokenInstance}`;
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        chatId: chatId,
+                        message: message
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResponse(data, false);
+                } else {
+                    displayResponse({ error: data, status: response.status }, true);
+                }
+            } catch (error) {
+                displayResponse({ error: error.message, type: 'NetworkError' }, true);
+            }
+            
+            setButtonLoading('btnSendMessage', false);
+        }
+
+        async function callSendFileByUrl() {
+            setButtonLoading('btnSendFileByUrl', true);
+            
+            const phone = document.getElementById('sendFilePhone').value.trim();
+            const fileUrl = document.getElementById('sendFileUrl').value.trim();
+            
+            if (!phone || !fileUrl) {
+                alert('Пожалуйста, заполните номер телефона и URL файла');
+                setButtonLoading('btnSendFileByUrl', false);
+                return;
+            }
+
+            // Форматируем номер телефона: добавляем @c.us если его нет
+            let chatId = phone;
+            if (!chatId.includes('@')) {
+                chatId = chatId + '@c.us';
+            }
+
+            // Извлекаем имя файла из URL, если не указано
+            const urlParts = fileUrl.split('/');
+            const fileName = urlParts[urlParts.length - 1] || 'file';
+
+            const credentials = getCredentials();
+            if (!credentials) {
+                setButtonLoading('btnSendFileByUrl', false);
+                return;
+            }
+
+            const url = `${API_BASE_URL}/waInstance${credentials.idInstance}/sendFileByUrl/${credentials.apiTokenInstance}`;
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        chatId: chatId,
+                        urlFile: fileUrl,
+                        fileName: fileName
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResponse(data, false);
+                } else {
+                    displayResponse({ error: data, status: response.status }, true);
+                }
+            } catch (error) {
+                displayResponse({ error: error.message, type: 'NetworkError' }, true);
+            }
+            
+            setButtonLoading('btnSendFileByUrl', false);
+        }
+    </script>
+</body>
+</html>
